@@ -18,7 +18,7 @@ A personal daily task manager built with vanilla HTML, CSS and JavaScript.
 3. Opens and works like a native app
 
 ## Live Site
-[Open App](https://github.com/crisplink/task-app.git)
+[Open App](https://crisplink.github.io/task-app)
 
 ## Tech
 Built with plain HTML, CSS, JavaScript and a Service Worker for offline support.
