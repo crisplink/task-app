@@ -1,3 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#1D9E75">
+  <link rel="manifest" href="manifest.json">
+  <title>My Task Manager</title>
+</head>
+<body>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',Arial,sans-serif;color:#1a1a1a;padding:1.5rem;background:linear-gradient(145deg,#d4f0e8 0%,#e8f4fd 50%,#fde8f0 100%);min-height:100vh;transition:background .4s}
@@ -32,8 +45,6 @@ body.dark .time-btn{background:rgba(29,158,117,0.15);border-color:rgba(93,202,16
 .btn-add{padding:0 18px;height:40px;border:none;border-radius:12px;background:linear-gradient(135deg,#1D9E75,#0F6E56);color:#fff;font-size:14px;font-weight:500;cursor:pointer;transition:opacity .18s}
 .btn-add:hover{opacity:.88}
 .btn-add:active{transform:scale(0.97)}
-
-/* Custom dropdown */
 .custom-sel{position:relative;height:40px;min-width:110px}
 .custom-sel-btn{height:40px;width:100%;padding:0 34px 0 14px;border:1px solid rgba(255,255,255,0.6);border-radius:12px;background:rgba(255,255,255,0.5);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);color:#1a1a1a;font-size:13px;font-weight:500;cursor:pointer;text-align:left;transition:border .18s,background .18s;display:flex;align-items:center;justify-content:space-between;gap:6px;white-space:nowrap}
 body.dark .custom-sel-btn{background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.15);color:#f0f0f0}
@@ -54,7 +65,6 @@ body.dark .custom-sel-opt.selected{background:rgba(29,158,117,0.25);color:#5DCAA
 .opt-high .opt-dot{background:#D85A30}
 .opt-med .opt-dot{background:#EF9F27}
 .opt-low .opt-dot{background:#639922}
-
 .main-tabs{display:flex;gap:4px;margin-bottom:1.1rem;background:rgba(255,255,255,0.4);border:1px solid rgba(255,255,255,0.6);border-radius:14px;padding:4px;position:relative;z-index:10}
 body.dark .main-tabs{background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.12)}
 .main-tab{flex:1;height:34px;border:none;font-size:13px;font-weight:500;cursor:pointer;background:transparent;color:#666;border-radius:10px;transition:background .2s,color .2s}
@@ -233,7 +243,6 @@ body.dark .mode-label{color:#5DCAA5}
 
 <div class="toast" id="toast"></div>
 
-<!-- Edit Modal -->
 <div class="modal-overlay" id="editOverlay">
   <div class="edit-modal">
     <h3>Edit task</h3>
@@ -263,7 +272,6 @@ body.dark .mode-label{color:#5DCAA5}
   </div>
 </div>
 
-<!-- Clock Modal -->
 <div class="clock-overlay" id="clockOverlay">
   <div class="clock-modal">
     <div class="clock-display">
@@ -298,76 +306,31 @@ document.getElementById('dateLabel').textContent=new Date().toLocaleDateString('
 document.getElementById('taskInput').addEventListener('keydown',e=>{ if(e.key==='Enter') addTask(); });
 document.getElementById('editName').addEventListener('keydown',e=>{ if(e.key==='Enter') saveEdit(); });
 
-// Close dropdowns on outside click
 document.addEventListener('click',e=>{
   document.querySelectorAll('.custom-sel.open').forEach(sel=>{
     if(!sel.contains(e.target)) sel.classList.remove('open');
   });
 });
 
-function toggleSel(id){
-  const el=document.getElementById(id);
-  const wasOpen=el.classList.contains('open');
-  document.querySelectorAll('.custom-sel.open').forEach(s=>s.classList.remove('open'));
-  if(!wasOpen) el.classList.add('open');
-}
+function toggleSel(id){ const el=document.getElementById(id); const wasOpen=el.classList.contains('open'); document.querySelectorAll('.custom-sel.open').forEach(s=>s.classList.remove('open')); if(!wasOpen) el.classList.add('open'); }
+function pickPriority(selId,val){ const el=document.getElementById(selId); el.querySelectorAll('.custom-sel-opt').forEach(o=>o.classList.remove('selected')); el.querySelector('.opt-'+val).classList.add('selected'); el.querySelector('.sel-label').textContent=val==='high'?'High':val==='med'?'Medium':'Low'; el.classList.remove('open'); }
+function getSelVal(selId){ const el=document.getElementById(selId); if(el.querySelector('.opt-high.selected')) return 'high'; if(el.querySelector('.opt-low.selected')) return 'low'; return 'med'; }
 
-function pickPriority(selId, val){
-  const el=document.getElementById(selId);
-  el.querySelectorAll('.custom-sel-opt').forEach(o=>o.classList.remove('selected'));
-  el.querySelector('.opt-'+val).classList.add('selected');
-  el.querySelector('.sel-label').textContent=val==='high'?'High':val==='med'?'Medium':'Low';
-  el.classList.remove('open');
-}
+function toggleTheme(){ const dark=document.body.classList.toggle('dark'); document.getElementById('themeBtn').textContent=dark?'☀️':'🌙'; localStorage.setItem('theme',dark?'dark':'light'); }
+function loadTheme(){ if(localStorage.getItem('theme')==='dark'){ document.body.classList.add('dark'); document.getElementById('themeBtn').textContent='☀️'; } }
 
-function getSelVal(selId){
-  const el=document.getElementById(selId);
-  if(el.querySelector('.opt-high.selected')) return 'high';
-  if(el.querySelector('.opt-low.selected')) return 'low';
-  return 'med';
-}
-
-function toggleTheme(){
-  const dark=document.body.classList.toggle('dark');
-  document.getElementById('themeBtn').textContent=dark?'☀️':'🌙';
-  localStorage.setItem('theme',dark?'dark':'light');
-}
-function loadTheme(){
-  if(localStorage.getItem('theme')==='dark'){
-    document.body.classList.add('dark');
-    document.getElementById('themeBtn').textContent='☀️';
-  }
-}
-function saveTasks(){
-  const ss=document.getElementById('saveStatus');
-  try{ localStorage.setItem('mytasks_v1',JSON.stringify(tasks)); ss.textContent='Saved'; setTimeout(()=>ss.textContent='',2000); }
-  catch(e){ ss.textContent='Save failed'; }
-}
-function loadTasks(){
-  try{ const r=localStorage.getItem('mytasks_v1'); if(r) tasks=JSON.parse(r); }catch(e){ tasks=[]; }
-  render();
-}
+function saveTasks(){ const ss=document.getElementById('saveStatus'); try{ localStorage.setItem('mytasks_v1',JSON.stringify(tasks)); ss.textContent='Saved'; setTimeout(()=>ss.textContent='',2000); } catch(e){ ss.textContent='Save failed'; } }
+function loadTasks(){ try{ const r=localStorage.getItem('mytasks_v1'); if(r) tasks=JSON.parse(r); }catch(e){ tasks=[]; } render(); }
 function todayTasks(){ return tasks.filter(t=>t.date===TODAY); }
 function historyTasks(){ return tasks.filter(t=>t.date!==TODAY); }
-function switchTab(tab){
-  document.getElementById('tabToday').classList.toggle('active',tab==='today');
-  document.getElementById('tabHistory').classList.toggle('active',tab==='history');
-  document.getElementById('todayView').style.display=tab==='today'?'block':'none';
-  document.getElementById('historyView').style.display=tab==='history'?'block':'none';
-  if(tab==='history') renderHistory();
-}
-function openClock(ctx){
-  clockContext=ctx; clockMode='hour';
-  if(ctx==='edit'&&editSelectedTime){ const[h,m]=editSelectedTime.split(':').map(Number); clockAMPM=h>=12?'PM':'AM'; clockHour=(h%12)||12; clockMin=m; }
-  else if(ctx==='add'&&selectedTime){ const[h,m]=selectedTime.split(':').map(Number); clockAMPM=h>=12?'PM':'AM'; clockHour=(h%12)||12; clockMin=m; }
-  else{ clockHour=12; clockMin=0; clockAMPM='AM'; }
-  document.getElementById('btnAM').classList.toggle('active',clockAMPM==='AM');
-  document.getElementById('btnPM').classList.toggle('active',clockAMPM==='PM');
-  renderClock(); document.getElementById('clockOverlay').classList.add('open');
-}
+
+function switchTab(tab){ document.getElementById('tabToday').classList.toggle('active',tab==='today'); document.getElementById('tabHistory').classList.toggle('active',tab==='history'); document.getElementById('todayView').style.display=tab==='today'?'block':'none'; document.getElementById('historyView').style.display=tab==='history'?'block':'none'; if(tab==='history') renderHistory(); }
+
+function openClock(ctx){ clockContext=ctx; clockMode='hour'; if(ctx==='edit'&&editSelectedTime){ const[h,m]=editSelectedTime.split(':').map(Number); clockAMPM=h>=12?'PM':'AM'; clockHour=(h%12)||12; clockMin=m; } else if(ctx==='add'&&selectedTime){ const[h,m]=selectedTime.split(':').map(Number); clockAMPM=h>=12?'PM':'AM'; clockHour=(h%12)||12; clockMin=m; } else{ clockHour=12; clockMin=0; clockAMPM='AM'; } document.getElementById('btnAM').classList.toggle('active',clockAMPM==='AM'); document.getElementById('btnPM').classList.toggle('active',clockAMPM==='PM'); renderClock(); document.getElementById('clockOverlay').classList.add('open'); }
 function closeClock(){ document.getElementById('clockOverlay').classList.remove('open'); }
 function setClockMode(m){ clockMode=m; renderClock(); }
 function setAMPM(v){ clockAMPM=v; document.getElementById('btnAM').classList.toggle('active',v==='AM'); document.getElementById('btnPM').classList.toggle('active',v==='PM'); }
+
 function renderClock(){
   const face=document.getElementById('clockFace');
   face.querySelectorAll('.clock-num').forEach(n=>n.remove());
@@ -376,103 +339,33 @@ function renderClock(){
   document.getElementById('dispH').classList.toggle('active',clockMode==='hour');
   document.getElementById('dispM').classList.toggle('active',clockMode==='min');
   if(clockMode==='hour'){
-    for(let i=1;i<=12;i++){
-      const a=(i/12)*2*Math.PI-Math.PI/2,el=document.createElement('div');
-      el.className='clock-num'+(i===clockHour?' sel':'');
-      el.textContent=i; el.style.left=(cx+r*Math.cos(a))+'px'; el.style.top=(cy+r*Math.sin(a))+'px';
-      el.onclick=()=>{ clockHour=i; updateDisplay(); clockMode='min'; renderClock(); };
-      face.appendChild(el);
-    }
+    for(let i=1;i<=12;i++){ const a=(i/12)*2*Math.PI-Math.PI/2,el=document.createElement('div'); el.className='clock-num'+(i===clockHour?' sel':''); el.textContent=i; el.style.left=(cx+r*Math.cos(a))+'px'; el.style.top=(cy+r*Math.sin(a))+'px'; el.onclick=()=>{ clockHour=i; updateDisplay(); clockMode='min'; renderClock(); }; face.appendChild(el); }
     setHandAngle((clockHour/12)*360,r-12,false);
   } else {
-    [0,5,10,15,20,25,30,35,40,45,50,55].forEach(m=>{
-      const a=(m/60)*2*Math.PI-Math.PI/2,el=document.createElement('div');
-      el.className='clock-num'+(m===clockMin?' sel':'');
-      el.textContent=m===0?'00':(m<10?'0'+m:m);
-      el.style.left=(cx+r*Math.cos(a))+'px'; el.style.top=(cy+r*Math.sin(a))+'px';
-      el.onclick=()=>{ clockMin=m; updateDisplay(); renderClock(); };
-      face.appendChild(el);
-    });
+    [0,5,10,15,20,25,30,35,40,45,50,55].forEach(m=>{ const a=(m/60)*2*Math.PI-Math.PI/2,el=document.createElement('div'); el.className='clock-num'+(m===clockMin?' sel':''); el.textContent=m===0?'00':(m<10?'0'+m:m); el.style.left=(cx+r*Math.cos(a))+'px'; el.style.top=(cy+r*Math.sin(a))+'px'; el.onclick=()=>{ clockMin=m; updateDisplay(); renderClock(); }; face.appendChild(el); });
     setHandAngle((clockMin/60)*360,r-12,true);
   }
   updateDisplay();
 }
-function setHandAngle(target,len,isMin){
-  const hand=document.getElementById('clockHand');
-  let diff=target-lastHandAngle;
-  if(diff>180) diff-=360; if(diff<-180) diff+=360;
-  lastHandAngle+=diff;
-  hand.style.height=len+'px'; hand.style.transform=`rotate(${lastHandAngle}deg)`;
-  hand.className='clock-hand'+(isMin?' min-hand':'');
-}
-function updateDisplay(){
-  document.getElementById('dispH').textContent=clockHour;
-  document.getElementById('dispM').textContent=clockMin<10?'0'+clockMin:clockMin;
-}
-function confirmTime(){
-  const h=clockAMPM==='PM'?(clockHour===12?12:clockHour+12):(clockHour===12?0:clockHour);
-  const val=(h<10?'0'+h:h)+':'+(clockMin<10?'0'+clockMin:clockMin);
-  const label=clockHour+':'+(clockMin<10?'0'+clockMin:clockMin)+' '+clockAMPM;
-  if(clockContext==='add'){ selectedTime=val; const b=document.getElementById('timeBtn'); b.textContent=label; b.classList.add('set'); }
-  else{ editSelectedTime=val; const b=document.getElementById('editTimeBtn'); b.textContent=label; b.classList.add('set'); }
-  closeClock();
-}
-function addTask(){
-  const inp=document.getElementById('taskInput');
-  const name=inp.value.trim(); if(!name) return;
-  tasks.push({id:Date.now(),name,time:selectedTime,priority:getSelVal('addPrioritySel'),done:false,date:TODAY});
-  inp.value=''; selectedTime='';
-  const b=document.getElementById('timeBtn'); b.textContent='+ Set time'; b.classList.remove('set');
-  pickPriority('addPrioritySel','med');
-  saveTasks(); render();
-}
-function openEdit(id){
-  const t=tasks.find(t=>t.id===id); if(!t) return;
-  editingId=id; editSelectedTime=t.time||'';
-  document.getElementById('editName').value=t.name;
-  pickPriority('editPrioritySel', t.priority);
-  const b=document.getElementById('editTimeBtn');
-  if(t.time){ b.textContent=fmt12(t.time); b.classList.add('set'); } else { b.textContent='+ Set time'; b.classList.remove('set'); }
-  document.getElementById('editOverlay').classList.add('open');
-  setTimeout(()=>document.getElementById('editName').focus(),300);
-}
+function setHandAngle(target,len,isMin){ const hand=document.getElementById('clockHand'); let diff=target-lastHandAngle; if(diff>180) diff-=360; if(diff<-180) diff+=360; lastHandAngle+=diff; hand.style.height=len+'px'; hand.style.transform=`rotate(${lastHandAngle}deg)`; hand.className='clock-hand'+(isMin?' min-hand':''); }
+function updateDisplay(){ document.getElementById('dispH').textContent=clockHour; document.getElementById('dispM').textContent=clockMin<10?'0'+clockMin:clockMin; }
+function confirmTime(){ const h=clockAMPM==='PM'?(clockHour===12?12:clockHour+12):(clockHour===12?0:clockHour); const val=(h<10?'0'+h:h)+':'+(clockMin<10?'0'+clockMin:clockMin); const label=clockHour+':'+(clockMin<10?'0'+clockMin:clockMin)+' '+clockAMPM; if(clockContext==='add'){ selectedTime=val; const b=document.getElementById('timeBtn'); b.textContent=label; b.classList.add('set'); } else{ editSelectedTime=val; const b=document.getElementById('editTimeBtn'); b.textContent=label; b.classList.add('set'); } closeClock(); }
+
+function addTask(){ const inp=document.getElementById('taskInput'); const name=inp.value.trim(); if(!name) return; tasks.push({id:Date.now(),name,time:selectedTime,priority:getSelVal('addPrioritySel'),done:false,date:TODAY}); inp.value=''; selectedTime=''; const b=document.getElementById('timeBtn'); b.textContent='+ Set time'; b.classList.remove('set'); pickPriority('addPrioritySel','med'); saveTasks(); render(); }
+function openEdit(id){ const t=tasks.find(t=>t.id===id); if(!t) return; editingId=id; editSelectedTime=t.time||''; document.getElementById('editName').value=t.name; pickPriority('editPrioritySel',t.priority); const b=document.getElementById('editTimeBtn'); if(t.time){ b.textContent=fmt12(t.time); b.classList.add('set'); } else { b.textContent='+ Set time'; b.classList.remove('set'); } document.getElementById('editOverlay').classList.add('open'); setTimeout(()=>document.getElementById('editName').focus(),300); }
 function closeEdit(){ document.getElementById('editOverlay').classList.remove('open'); editingId=null; }
 function clearEditTime(){ editSelectedTime=''; const b=document.getElementById('editTimeBtn'); b.textContent='+ Set time'; b.classList.remove('set'); }
-function saveEdit(){
-  const name=document.getElementById('editName').value.trim(); if(!name) return;
-  const t=tasks.find(t=>t.id===editingId); if(!t) return;
-  t.name=name; t.time=editSelectedTime; t.priority=getSelVal('editPrioritySel');
-  saveTasks(); render(); closeEdit();
-}
+function saveEdit(){ const name=document.getElementById('editName').value.trim(); if(!name) return; const t=tasks.find(t=>t.id===editingId); if(!t) return; t.name=name; t.time=editSelectedTime; t.priority=getSelVal('editPrioritySel'); saveTasks(); render(); closeEdit(); }
 function toggle(id){ const t=tasks.find(t=>t.id===id); if(t) t.done=!t.done; saveTasks(); render(); }
 function remove(id){ tasks=tasks.filter(t=>t.id!==id); saveTasks(); render(); }
 function setFilter(f,btn){ filter=f; document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); render(); }
-function fmt12(t){
-  if(!t) return '';
-  const[h,m]=t.split(':').map(Number);
-  return((h%12)||12)+':'+(m<10?'0'+m:m)+' '+(h>=12?'PM':'AM');
-}
-function timeStatus(t){
-  if(!t) return null;
-  const now=new Date(),[h,m]=t.split(':').map(Number);
-  const diff=(new Date(now.getFullYear(),now.getMonth(),now.getDate(),h,m)-now)/60000;
-  return diff<0?'overdue':diff<=30?'soon':'ok';
-}
-function launchConfetti(){
-  const colors=['#1D9E75','#5DCAA5','#EF9F27','#D85A30','#534AB7','#E24B4A','#FAC775','#9FE1CB'];
-  for(let i=0;i<60;i++){
-    const el=document.createElement('div');
-    const size=7+Math.random()*7, dur=1.6+Math.random()*1.2, delay=Math.random()*0.5;
-    el.style.cssText=`position:fixed;top:-14px;left:${Math.random()*100}%;width:${size}px;height:${size}px;background:${colors[i%colors.length]};border-radius:${Math.random()>.5?'50%':'3px'};pointer-events:none;z-index:9999;animation:confettiFall ${dur}s ${delay}s linear forwards`;
-    document.body.appendChild(el);
-    setTimeout(()=>el.remove(),(dur+delay)*1000+100);
-  }
-}
-function checkAllDone(today){
-  const total=today.length, done=today.filter(t=>t.done).length;
-  if(total>0&&done===total&&!wasComplete){ wasComplete=true; setTimeout(launchConfetti,500); }
-  else if(done<total){ wasComplete=false; }
-}
+
+function fmt12(t){ if(!t) return ''; const[h,m]=t.split(':').map(Number); return((h%12)||12)+':'+(m<10?'0'+m:m)+' '+(h>=12?'PM':'AM'); }
+function timeStatus(t){ if(!t) return null; const now=new Date(),[h,m]=t.split(':').map(Number); const diff=(new Date(now.getFullYear(),now.getMonth(),now.getDate(),h,m)-now)/60000; return diff<0?'overdue':diff<=30?'soon':'ok'; }
+
+function launchConfetti(){ const colors=['#1D9E75','#5DCAA5','#EF9F27','#D85A30','#534AB7','#E24B4A','#FAC775','#9FE1CB']; for(let i=0;i<60;i++){ const el=document.createElement('div'); const size=7+Math.random()*7,dur=1.6+Math.random()*1.2,delay=Math.random()*0.5; el.style.cssText=`position:fixed;top:-14px;left:${Math.random()*100}%;width:${size}px;height:${size}px;background:${colors[i%colors.length]};border-radius:${Math.random()>.5?'50%':'3px'};pointer-events:none;z-index:9999;animation:confettiFall ${dur}s ${delay}s linear forwards`; document.body.appendChild(el); setTimeout(()=>el.remove(),(dur+delay)*1000+100); } }
+function checkAllDone(today){ const total=today.length,done=today.filter(t=>t.done).length; if(total>0&&done===total&&!wasComplete){ wasComplete=true; setTimeout(launchConfetti,500); } else if(done<total){ wasComplete=false; } }
+
 function render(){
   const list=document.getElementById('taskList'),empty=document.getElementById('emptyMsg');
   const today=todayTasks();
@@ -480,35 +373,14 @@ function render(){
   document.getElementById('progressText').textContent=done+' / '+total;
   document.getElementById('progressFill').style.width=total?Math.round(done/total*100)+'%':'0%';
   const badge=document.getElementById('doneBadge');
-  if(total>0&&done===total){ badge.style.display='flex'; setTimeout(()=>badge.style.transform='scale(1.2)',50); setTimeout(()=>badge.style.transform='scale(1)',300); }
-  else{ badge.style.display='none'; badge.style.transform='scale(1)'; }
+  if(total>0&&done===total){ badge.style.display='flex'; setTimeout(()=>badge.style.transform='scale(1.2)',50); setTimeout(()=>badge.style.transform='scale(1)',300); } else{ badge.style.display='none'; badge.style.transform='scale(1)'; }
   checkAllDone(today);
-  const visible=today.filter(t=>{
-    if(filter==='active') return !t.done;
-    if(filter==='done') return t.done;
-    if(filter==='high') return t.priority==='high';
-    if(filter==='med') return t.priority==='med';
-    if(filter==='low') return t.priority==='low';
-    return true;
-  });
+  const visible=today.filter(t=>{ if(filter==='active') return !t.done; if(filter==='done') return t.done; if(filter==='high') return t.priority==='high'; if(filter==='med') return t.priority==='med'; if(filter==='low') return t.priority==='low'; return true; });
   if(!visible.length){ list.innerHTML=''; empty.style.display='block'; return; }
   empty.style.display='none';
-  list.innerHTML=visible.map(t=>{
-    const s=timeStatus(t.time);
-    return `<div class="task p-${t.priority}${t.done?' done':''}">
-      <div class="checkbox${t.done?' checked':''}" onclick="toggle(${t.id})">
-        <svg class="check-svg" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1"/></svg>
-      </div>
-      <span class="task-name">${t.name}</span>
-      <div class="task-meta">
-        ${t.time?`<span class="time-tag${s==='overdue'?' overdue':s==='soon'?' soon':''}">${fmt12(t.time)}</span>`:''}
-        <span class="badge badge-${t.priority}">${t.priority==='high'?'High':t.priority==='med'?'Medium':'Low'}</span>
-        <button class="edit-btn" onclick="openEdit(${t.id})">✏️</button>
-        <button class="del-btn" onclick="remove(${t.id})">✕</button>
-      </div>
-    </div>`;
-  }).join('');
+  list.innerHTML=visible.map(t=>{ const s=timeStatus(t.time); return `<div class="task p-${t.priority}${t.done?' done':''}"><div class="checkbox${t.done?' checked':''}" onclick="toggle(${t.id})"><svg class="check-svg" viewBox="0 0 10 8"><polyline points="1,4 4,7 9,1"/></svg></div><span class="task-name">${t.name}</span><div class="task-meta">${t.time?`<span class="time-tag${s==='overdue'?' overdue':s==='soon'?' soon':''}">${fmt12(t.time)}</span>`:''}<span class="badge badge-${t.priority}">${t.priority==='high'?'High':t.priority==='med'?'Medium':'Low'}</span><button class="edit-btn" onclick="openEdit(${t.id})">✏️</button><button class="del-btn" onclick="remove(${t.id})">✕</button></div></div>`; }).join('');
 }
+
 function renderHistory(){
   const list=document.getElementById('historyList'),empty=document.getElementById('emptyHistory');
   const hist=historyTasks();
@@ -517,40 +389,23 @@ function renderHistory(){
   const grouped={};
   hist.forEach(t=>{ if(!grouped[t.date]) grouped[t.date]=[]; grouped[t.date].push(t); });
   const dates=Object.keys(grouped).sort((a,b)=>new Date(b)-new Date(a));
-  list.innerHTML=dates.map(date=>{
-    const items=grouped[date],done=items.filter(t=>t.done).length;
-    return `<div class="hist-group">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-        <span class="hist-date">${date}</span>
-        <span style="font-size:12px;color:#888">${done}/${items.length} completed</span>
-      </div>
-      ${items.map(t=>`<div class="hist-task p-${t.priority}">
-        <div class="hist-done ${t.done?'yes':'no'}">
-          <svg width="10" height="10" viewBox="0 0 10 8" fill="none" stroke="#fff" stroke-width="2.5">
-            ${t.done?'<polyline points="1,4 4,7 9,1"/>':'<line x1="2" y1="2" x2="8" y2="8"/><line x1="8" y1="2" x2="2" y2="8"/>'}
-          </svg>
-        </div>
-        <span class="hist-task-name">${t.name}</span>
-        <div class="task-meta">
-          ${t.time?`<span class="time-tag">${fmt12(t.time)}</span>`:''}
-          <span class="badge badge-${t.priority}">${t.priority==='high'?'High':t.priority==='med'?'Medium':'Low'}</span>
-        </div>
-      </div>`).join('')}
-    </div>`;
-  }).join('');
+  list.innerHTML=dates.map(date=>{ const items=grouped[date],done=items.filter(t=>t.done).length; return `<div class="hist-group"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span class="hist-date">${date}</span><span style="font-size:12px;color:#888">${done}/${items.length} completed</span></div>${items.map(t=>`<div class="hist-task p-${t.priority}"><div class="hist-done ${t.done?'yes':'no'}"><svg width="10" height="10" viewBox="0 0 10 8" fill="none" stroke="#fff" stroke-width="2.5">${t.done?'<polyline points="1,4 4,7 9,1"/>':'<line x1="2" y1="2" x2="8" y2="8"/><line x1="8" y1="2" x2="2" y2="8"/>'}</svg></div><span class="hist-task-name">${t.name}</span><div class="task-meta">${t.time?`<span class="time-tag">${fmt12(t.time)}</span>`:''}<span class="badge badge-${t.priority}">${t.priority==='high'?'High':t.priority==='med'?'Medium':'Low'}</span></div></div>`).join('')}</div>`; }).join('');
 }
+
 function showToast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),4000); }
-function checkReminders(){
-  const now=new Date();
-  const cur=(now.getHours()<10?'0':'')+now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes();
-  tasks.forEach(t=>{ if(t.time&&!t.done&&t.time===cur&&!alerted.has(t.id)){ alerted.add(t.id); showToast('Reminder: '+t.name); }});
-}
-loadTheme(); loadTasks(); setInterval(checkReminders,30000);
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(() => console.log('Offline ready!'))
-      .catch(e => console.log('SW error:', e));
+function checkReminders(){ const now=new Date(); const cur=(now.getHours()<10?'0':'')+now.getHours()+':'+(now.getMinutes()<10?'0':'')+now.getMinutes(); tasks.forEach(t=>{ if(t.time&&!t.done&&t.time===cur&&!alerted.has(t.id)){ alerted.add(t.id); showToast('Reminder: '+t.name); } }); }
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('/task-app/sw.js')
+      .then(()=>console.log('Offline ready!'))
+      .catch(e=>console.log('SW error:',e));
   });
 }
+
+loadTheme();
+loadTasks();
+setInterval(checkReminders,30000);
 </script>
+</body>
+</html>
