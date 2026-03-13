@@ -1,5 +1,9 @@
-const CACHE = 'mytasks-v1';
-const FILES = ['/', '/index.html'];
+const CACHE = 'mytasks-v2';
+const FILES = [
+  '/task-app/',
+  '/task-app/index.html',
+  '/task-app/manifest.json'
+];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
@@ -19,6 +23,6 @@ self.addEventListener('fetch', e => {
       const clone = res.clone();
       caches.open(CACHE).then(c => c.put(e.request, clone));
       return res;
-    }))
+    }).catch(() => caches.match('/task-app/index.html')))
   );
 });
