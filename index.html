@@ -546,4 +546,11 @@ function checkReminders(){
   tasks.forEach(t=>{ if(t.time&&!t.done&&t.time===cur&&!alerted.has(t.id)){ alerted.add(t.id); showToast('Reminder: '+t.name); }});
 }
 loadTheme(); loadTasks(); setInterval(checkReminders,30000);
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('Offline ready!'))
+      .catch(e => console.log('SW error:', e));
+  });
+}
 </script>
