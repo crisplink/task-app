@@ -1,0 +1,20 @@
+{
+  "name": "My Task Manager",
+  "short_name": "Tasks",
+  "start_url": "/task-app/",
+  "display": "standalone",
+  "background_color": "#d4f0e8",
+  "theme_color": "#1D9E75",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192x192/1D9E75/ffffff?text=T",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://via.placeholder.com/512x512/1D9E75/ffffff?text=T",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
